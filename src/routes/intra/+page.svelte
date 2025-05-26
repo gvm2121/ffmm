@@ -59,7 +59,17 @@ function toggleSidebar(){
       .append('svg')
       .attr('width', width)
       .attr('height', height);
-
+      const tooltip = d3.select(chartContainer)
+        .append('div')
+        .attr('class', 'tooltip-d3')
+        .style('position', 'absolute')
+        .style('background', 'white')
+        .style('padding', '6px 10px')
+        .style('border', '1px solid #ccc')
+        .style('border-radius', '4px')
+        .style('font-size', '12px')
+        .style('pointer-events', 'none')
+        .style('display', 'none');
     const x = d3.scaleTime()
       .domain(d3.extent(parsed, d => d.date) as [Date, Date])
       .range([margin.left, width - margin.right]);
@@ -89,7 +99,25 @@ function toggleSidebar(){
       .attr('stroke', 'steelblue')
       .attr('stroke-width', 2)
       .attr('d', line);
-  }
+      svg.selectAll('circle')
+        .data(parsed)
+        .enter()
+        .append('circle')
+        .attr('cx', d => x(d.date))
+        .attr('cy', d => y(d.value))
+        .attr('r', 4)
+        .attr('fill', 'steelblue')
+        .on('mouseover', (event, d) => {
+          tooltip
+            .html(`<strong>${d3.timeFormat('%d-%b-%Y')(d.date)}</strong><br/>$${d.value.toLocaleString()}`)
+            .style('left', `${event.pageX + 10}px`)
+            .style('top', `${event.pageY - 28}px`)
+            .style('display', 'block');
+        })
+        .on('mouseout', () => {
+          tooltip.style('display', 'none');
+        });
+        }
 </script>
 
 <div class="flex h-screen bg-gray-100">
@@ -209,7 +237,7 @@ function toggleSidebar(){
       <!-- Contenedor D3 -->
         {#if data.serie.length > 0}
         <div class="d3-salida" bind:this={chartContainer}></div>
-        {:else if fondoSeleccionado}
+        {:else}
         <p>No hay datos disponibles para este fondo.</p>
         {/if}
 

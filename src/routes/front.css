@@ -148,3 +148,11 @@
       border: 1px solid #ccc;
       background-color: #f5f5f5;
     }
+    .d3-salida {
+      margin-top: 2rem;
+      position: relative;
+    }
+    
+    .tooltip-d3 {
+      z-index: 10;
+    }
