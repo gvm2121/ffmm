@@ -12,7 +12,9 @@ const pool = new Pool({
 export const load: PageServerLoad = async ({ url }) => {
   const categoria = url.searchParams.get('categoria');
   const fondo = url.searchParams.get('fondo');
+  const seriefondo = url.searchParams.get('seriefondo');
   const client = await pool.connect();
+  
 
   try {
     // 1. Administradores únicos
@@ -26,13 +28,20 @@ export const load: PageServerLoad = async ({ url }) => {
         [categoria]
       );
     }
+     // 3. Seriefondo asociado a la categoria (tercer select)
+    let seriefondoResult = { rows: [] };
+    if (categoria && fondo) {
+      seriefondoResult = await client.query(
+        'SELECT distinct(fundseries) FROM datos WHERE fundname = $1',
+        [fondo]
+      );
+    }
 
     // 3. Datos para renderizar el gráfico
     let serie = { rows: [] };
-    if (categoria && fondo) {
+    if (categoria && fondo && seriefondo) {
       serie = await client.query(
-        'SELECT scrap_date, installmentvalue FROM datos WHERE fundname = $1 ORDER BY scrap_date DESC LIMIT 20;',
-        [fondo]
+        'SELECT * FROM datos WHERE fundname = $1 AND fundseries = $2 ORDER BY scrap_date DESC LIMIT 20;',[fondo,seriefondo]
       );
     }
     return {
@@ -40,7 +49,8 @@ export const load: PageServerLoad = async ({ url }) => {
       fondos: fondosResult.rows.map(r => r.fundname),
       categoriaSeleccionada: categoria,
       fondoSeleccionado: fondo,
-      serie : serie.rows
+      serie : serie.rows,
+      seriefondo : seriefondoResult.rows.map(r => r.fundseries)
     };
   } finally {
     client.release();

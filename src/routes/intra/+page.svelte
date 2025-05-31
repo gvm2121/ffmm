@@ -15,11 +15,13 @@ function toggleSidebar(){
     fondos: string[],
     serie: { scrap_date: string; installmentvalue: number }[],
     categoriaSeleccionada: string | null,
-    fondoSeleccionado: string | null
+    fondoSeleccionado: string | null,
+    seriefondo : string[],
   };
   
   let categoriaSeleccionada = data.categoriaSeleccionada ?? '';
   let fondoSeleccionado = data.fondoSeleccionado ?? '';
+  let seriefondoSeleccionado = data.seriefondo ?? '';
   let chartContainer: HTMLDivElement;
 
   function onChangeCategoria() {
@@ -28,10 +30,13 @@ function toggleSidebar(){
   }
 
   function onChangeFondo() {
+    seriefondoSeleccionado = '';
     goto(`?categoria=${categoriaSeleccionada}&fondo=${fondoSeleccionado}`);
-    console.log('Serie desde el servidor:', data.serie);
   }
-
+  function onChangeserieFondo() {
+    goto(`?categoria=${categoriaSeleccionada}&fondo=${fondoSeleccionado}&seriefondo=${seriefondoSeleccionado}`);
+    
+  }
   // 🔁 Ejecutar cuando llegan datos nuevos
   $: if (data.serie.length > 0) {
     drawLineChart();
@@ -230,6 +235,15 @@ function toggleSidebar(){
             <option disabled value="">-- Selecciona un fondo --</option>
             {#each data.fondos as fondo}
               <option value={fondo}>{fondo}</option>
+            {/each}
+          </select>
+        {/if}
+          <!-- Select 3: SerieFondo (condicional) -->
+        {#if data.seriefondo.length > 0}
+          <select bind:value={seriefondoSeleccionado} on:change={onChangeserieFondo}>
+            <option disabled value="">-- Selecciona una serie --</option>
+            {#each data.seriefondo as sf}
+              <option value={sf}>{sf}</option>
             {/each}
           </select>
         {/if}
