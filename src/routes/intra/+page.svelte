@@ -80,7 +80,7 @@ function toggleSidebar(){
       .range([margin.left, width - margin.right]);
 
     const y = d3.scaleLinear()
-      .domain([0, d3.max(parsed, d => d.value)!])
+      .domain([1000, d3.max(parsed, d => d.value)!])
       .nice()
       .range([height - margin.bottom, margin.top]);
 

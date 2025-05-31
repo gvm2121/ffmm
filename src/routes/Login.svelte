@@ -1,7 +1,7 @@
 <script>
     let showPassword = false;
 </script>
-<form action="" method="post">
+<form action="?/login" method="POST">
     <input class="email-field" type="email" placeholder="E-mail Address" required>
     <div class="password-field">
       <input
